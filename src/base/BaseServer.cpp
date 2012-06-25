@@ -5,13 +5,16 @@ namespace Beliskner
 
 BaseServer::BaseServer()
 {
+    logger = Logger::getSingletonPtr();
+
     socketfd = bindSocket();
     make_socket_non_blocking( socketfd );
     efd = epoll_create1( 0 );
 
     if ( efd == -1 )
     {
-        printf( "failed epoll_create1: %s", strerror(errno));
+        logger->log( "failed epoll_create1" );
+        logger->log( strerror( errno ) );
         abort();
     }
 
@@ -24,12 +27,10 @@ BaseServer::BaseServer()
     listener = epoll_ctl( efd, EPOLL_CTL_ADD, socketfd, &event );
     if ( listener == -1 )
     {
-        printf("failed epoll_ctl: %s", strerror(errno));
+        logger->log( "failed epoll_ctl" );
+        logger->log( strerror( errno ) );
         abort();
     }
-
-    logger = Logger::getSingletonPtr();
-    logger->log();
 }
 
 BaseServer::~BaseServer()
@@ -47,7 +48,8 @@ void BaseServer::run()
             ( events[i].events & EPOLLHUP ) ||
             ( !( events[i].events & EPOLLIN ) ) )
         {
-            printf( "epoll error on fd: %s", strerror(errno));
+            logger->log( "epoll error on fd" );
+            logger->log( strerror( errno ) );
             close (events[i].data.fd);
             continue;
         }
@@ -95,7 +97,8 @@ int BaseServer::bindSocket()
     listener = getaddrinfo( NULL, port, &hints, &result );
     if ( listener != 0 )
     {
-        printf( "getaddrinfo: %s\n", gai_strerror ( listener ) );
+        logger->log( "getaddrinfo" );
+        logger->log( gai_strerror ( listener ) );
         return -1;
     }
 
@@ -104,7 +107,8 @@ int BaseServer::bindSocket()
         socketfd = socket( rp->ai_family, rp->ai_socktype, rp->ai_protocol );
         if ( socketfd == -1 )
         {
-            printf( "could not bind: %s", strerror( errno ) );
+            logger->log( "could not bind" );
+            logger->log( strerror( errno ) );
             continue;
         }
 
@@ -112,7 +116,8 @@ int BaseServer::bindSocket()
 
         if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
         {
-            printf( "could not set socketopt REUSEADDR: %s", strerror(errno));
+            logger->log( "could not set socketopt REUSEADDR" );
+            logger->log( strerror( errno ) );
         }
 
         listener = bind (socketfd, rp->ai_addr, rp->ai_addrlen);
@@ -123,14 +128,15 @@ int BaseServer::bindSocket()
         }
         else
         {
-            printf( "could not bind: %s", strerror(errno));
+            logger->log( "could not bind" );
+            logger->log( strerror(errno));
         }
         close( socketfd );
     }
 
     if ( rp == NULL )
     {
-        printf( "gave up to bind" );
+        logger->log( "gave up to bind" );
         return -1;
     }
 
@@ -160,7 +166,8 @@ void BaseServer::do_accept()
             }
             else
             {
-                printf( " accept failed: %s ", strerror(errno) );
+                logger->log( " accept failed" );
+                logger->log( strerror( errno ) );
                 break;
             }
         }
@@ -168,7 +175,7 @@ void BaseServer::do_accept()
         listener = make_socket_non_blocking( infd );
         if ( listener == -1 )
         {
-            printf( "failed to make_socket_non_blocking: do_accept: %s", strerror(errno));
+            logger->log( "failed to make_socket_non_blocking: do_accept" );
         }
 
         event.data.fd = infd;
@@ -176,7 +183,7 @@ void BaseServer::do_accept()
         listener = epoll_ctl( efd, EPOLL_CTL_ADD, infd, &event );
         if ( listener == -1 )
         {
-            printf( "failed to epoll_ctl: do_accept: %s", strerror(errno));
+            logger->log( "failed to epoll_ctl: do_accept");
             abort();
         }
     }
@@ -232,7 +239,7 @@ int BaseServer::make_socket_non_blocking( int socketfd )
     flags = fcntl( socketfd, F_GETFL, 0 );
     if ( flags == -1 )
     {
-        printf( "failed reading fd flags" );
+        logger->log( "failed reading fd flags" );
         return -1;
     }
 
@@ -240,20 +247,16 @@ int BaseServer::make_socket_non_blocking( int socketfd )
     listener = fcntl( socketfd, F_SETFL, flags );
     if ( listener == -1 )
     {
-        printf( "failed setting fd flags" );
+        logger->log( "failed setting fd flags" );
         return -1;
     }
 
-
     int on = 1;
-    //syslog(LOG_INFO,"setsockopt(SO_REUSEADDR)");
 
-
-    if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+    if( setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0 )
     {
-    //        syslog(LOG_ALERT,"could not set socketopt REUSEADDR: %s", strerror(errno));
+        logger->log( "could not set socketopt REUSEADDR" );
     }
-
 
     return 0;
 }

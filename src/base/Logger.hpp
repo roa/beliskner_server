@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 namespace Beliskner
 {
@@ -11,13 +12,15 @@ class Logger
 {
 public:
     static Logger* getSingletonPtr();
-    void log();
+    void log( std::string logMsg );
 
 private:
     static Logger* singletonPtr;
     Logger();
     Logger( const Logger& );
     ~Logger();
+
+    std::string createTimestamp();
 };
 
 }

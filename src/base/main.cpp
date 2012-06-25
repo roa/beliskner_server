@@ -11,7 +11,6 @@ int main()
 
     Logger * logger;
     logger = Logger::getSingletonPtr();
-    logger->log();
 
     while( true )
         server->run();
