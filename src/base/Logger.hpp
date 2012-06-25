@@ -13,6 +13,7 @@ class Logger
 public:
     static Logger* getSingletonPtr();
     void log( std::string logMsg );
+    void log( std::string logMsg, std::string extLogMsg );
 
 private:
     static Logger* singletonPtr;

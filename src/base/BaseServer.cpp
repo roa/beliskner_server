@@ -13,8 +13,7 @@ BaseServer::BaseServer( Config* _config ) : config( _config )
 
     if ( efd == -1 )
     {
-        logger->log( "failed epoll_create1" );
-        logger->log( strerror( errno ) );
+        logger->log( "failed epoll_create1: ", strerror( errno ) );
         abort();
     }
 
@@ -27,8 +26,7 @@ BaseServer::BaseServer( Config* _config ) : config( _config )
     listener = epoll_ctl( efd, EPOLL_CTL_ADD, socketfd, &event );
     if ( listener == -1 )
     {
-        logger->log( "failed epoll_ctl" );
-        logger->log( strerror( errno ) );
+        logger->log( "failed epoll_ctl: ", strerror( errno ) );
         abort();
     }
 }
@@ -48,8 +46,7 @@ void BaseServer::run()
             ( events[i].events & EPOLLHUP ) ||
             ( !( events[i].events & EPOLLIN ) ) )
         {
-            logger->log( "epoll error on fd" );
-            logger->log( strerror( errno ) );
+            logger->log( "epoll error on fd: ", strerror( errno ) );
             close (events[i].data.fd);
             continue;
         }
@@ -96,8 +93,7 @@ int BaseServer::bindSocket()
     listener = getaddrinfo( NULL, config->getPort().c_str(), &hints, &result );
     if ( listener != 0 )
     {
-        logger->log( "getaddrinfo" );
-        logger->log( gai_strerror ( listener ) );
+        logger->log( "getaddrinfo: ", gai_strerror ( listener ) );
         return -1;
     }
 
@@ -106,8 +102,7 @@ int BaseServer::bindSocket()
         socketfd = socket( rp->ai_family, rp->ai_socktype, rp->ai_protocol );
         if ( socketfd == -1 )
         {
-            logger->log( "could not bind" );
-            logger->log( strerror( errno ) );
+            logger->log( "could not bind: ", strerror( errno ) );
             continue;
         }
 
@@ -115,8 +110,7 @@ int BaseServer::bindSocket()
 
         if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
         {
-            logger->log( "could not set socketopt REUSEADDR" );
-            logger->log( strerror( errno ) );
+            logger->log( "could not set socketopt REUSEADDR", strerror( errno ) );
         }
 
         listener = bind (socketfd, rp->ai_addr, rp->ai_addrlen);
@@ -127,8 +121,7 @@ int BaseServer::bindSocket()
         }
         else
         {
-            logger->log( "could not bind" );
-            logger->log( strerror(errno));
+            logger->log( "could not bind", strerror(errno) );
         }
         close( socketfd );
     }
@@ -165,8 +158,7 @@ void BaseServer::do_accept()
             }
             else
             {
-                logger->log( " accept failed" );
-                logger->log( strerror( errno ) );
+                logger->log( " accept failed: ", strerror( errno ) );
                 break;
             }
         }
@@ -208,6 +200,8 @@ void BaseServer::do_io( int i )
                 * connection closed from *
                 * remote side            *
                 **************************/
+                shutdown( events[i].data.fd, SHUT_WR );
+                close( events[i].data.fd );
                 break;
             }
 

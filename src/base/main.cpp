@@ -12,9 +12,6 @@ int main()
     BaseServer *server;
     server = new BaseServer( conf );
 
-    Logger *logger;
-    logger = Logger::getSingletonPtr();
-
     while( true )
         server->run();
 

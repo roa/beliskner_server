@@ -37,6 +37,20 @@ void Logger::log( std::string logMsg )
     logFile.close();
 }
 
+void Logger::log( std::string logMsg, std::string extLogMsg )
+{
+    std::ofstream logFile;
+    logFile.open ("log/dev.log", std::ios::app );
+
+    logFile << createTimestamp()
+            << "    "
+            << logMsg
+            << extLogMsg
+            << std::endl;
+
+    logFile.close();
+}
+
 std::string Logger::createTimestamp()
 {
     std::stringstream timestamp;

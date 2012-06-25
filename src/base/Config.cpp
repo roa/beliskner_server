@@ -19,9 +19,7 @@ void Config::load( const char* fname )
     L = luaL_newstate();
     if( luaL_loadfile( L, fname ) || lua_pcall( L, 0, 0, 0 ) )
     {
-        std::stringstream logstring;
-        logstring << "cannot run config file: " << lua_tostring( L, -1 );
-        logger->log(  logstring.str() );
+        logger->log( "cannot run config file: ", lua_tostring( L, -1 ) );
     }
 
     /**********************
@@ -35,9 +33,7 @@ void Config::load( const char* fname )
     else
     {
         port = lua_tostring( L, 1 );
-        std::stringstream logstring;
-        logstring << "port set to: " << port;
-        logger->log( logstring.str() );
+        logger->log( "set port to: ", port );
     }
     lua_pop( L, 1 );
 
