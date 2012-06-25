@@ -28,7 +28,12 @@ void Logger::log( std::string logMsg )
 {
     std::ofstream logFile;
     logFile.open ("log/dev.log", std::ios::app );
-    logFile << createTimestamp() << "\t" << logMsg << std::endl;
+
+    logFile << createTimestamp()
+            << "    "
+            << logMsg
+            << std::endl;
+
     logFile.close();
 }
 
