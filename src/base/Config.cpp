@@ -44,4 +44,9 @@ void Config::load( const char* fname )
     lua_close( L );
 }
 
+std::string Config::getPort()
+{
+    return port;
+}
+
 }

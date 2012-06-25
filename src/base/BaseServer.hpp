@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 
 #include "Logger.hpp"
+#include "Config.hpp"
 
 namespace Beliskner
 {
@@ -25,7 +26,7 @@ namespace Beliskner
 class BaseServer
 {
 public:
-    BaseServer();
+    BaseServer( Config* _config );
     ~BaseServer();
 
     void run();
@@ -37,6 +38,7 @@ private:
     struct epoll_event events[MAXEVENTS];
 
     Logger *logger;
+    Config *config;
 
     int bindSocket();
     void do_accept();

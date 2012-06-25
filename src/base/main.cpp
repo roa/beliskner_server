@@ -10,7 +10,7 @@ int main()
     conf = new Config();
 
     BaseServer *server;
-    server = new BaseServer();
+    server = new BaseServer( conf );
 
     Logger *logger;
     logger = Logger::getSingletonPtr();

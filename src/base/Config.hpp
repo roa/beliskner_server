@@ -17,6 +17,7 @@ public:
     lua_State *L;
 
     void load( const char* fname );
+    std::string getPort();
 
 private:
 

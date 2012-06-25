@@ -3,7 +3,7 @@
 namespace Beliskner
 {
 
-BaseServer::BaseServer()
+BaseServer::BaseServer( Config* _config ) : config( _config )
 {
     logger = Logger::getSingletonPtr();
 
@@ -82,7 +82,6 @@ void BaseServer::run()
 
 int BaseServer::bindSocket()
 {
-    const char * port = "9034";
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     int listener;
@@ -94,7 +93,7 @@ int BaseServer::bindSocket()
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    listener = getaddrinfo( NULL, port, &hints, &result );
+    listener = getaddrinfo( NULL, config->getPort().c_str(), &hints, &result );
     if ( listener != 0 )
     {
         logger->log( "getaddrinfo" );
