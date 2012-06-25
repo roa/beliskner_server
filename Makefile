@@ -18,7 +18,7 @@ CFLAGS_DEBUG =  $(CFLAGS) -g
 RESINC_DEBUG =  $(RESINC)
 RCFLAGS_DEBUG =  $(RCFLAGS)
 LIBDIR_DEBUG =  $(LIBDIR)
-LIB_DEBUG = $(LIB)
+LIB_DEBUG = $(LIB) -llua
 LDFLAGS_DEBUG =  $(LDFLAGS)
 OBJDIR_DEBUG = obj/Debug
 DEP_DEBUG = 
@@ -29,15 +29,15 @@ CFLAGS_RELEASE =  $(CFLAGS) -O2
 RESINC_RELEASE =  $(RESINC)
 RCFLAGS_RELEASE =  $(RCFLAGS)
 LIBDIR_RELEASE =  $(LIBDIR)
-LIB_RELEASE = $(LIB)
+LIB_RELEASE = $(LIB) -llua
 LDFLAGS_RELEASE =  $(LDFLAGS) -s
 OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/beliskner_server
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/base/BaseServer.o $(OBJDIR_DEBUG)/src/base/Logger.o $(OBJDIR_DEBUG)/src/base/main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/base/BaseServer.o $(OBJDIR_DEBUG)/src/base/Config.o $(OBJDIR_DEBUG)/src/base/InputHandler.o $(OBJDIR_DEBUG)/src/base/Logger.o $(OBJDIR_DEBUG)/src/base/main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/base/BaseServer.o $(OBJDIR_RELEASE)/src/base/Logger.o $(OBJDIR_RELEASE)/src/base/main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/base/BaseServer.o $(OBJDIR_RELEASE)/src/base/Config.o $(OBJDIR_RELEASE)/src/base/InputHandler.o $(OBJDIR_RELEASE)/src/base/Logger.o $(OBJDIR_RELEASE)/src/base/main.o
 
 all: debug release
 
@@ -56,6 +56,12 @@ out_debug: $(OBJ_DEBUG) $(DEP_DEBUG)
 
 $(OBJDIR_DEBUG)/src/base/BaseServer.o: src/base/BaseServer.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/base/BaseServer.cpp -o $(OBJDIR_DEBUG)/src/base/BaseServer.o
+
+$(OBJDIR_DEBUG)/src/base/Config.o: src/base/Config.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/base/Config.cpp -o $(OBJDIR_DEBUG)/src/base/Config.o
+
+$(OBJDIR_DEBUG)/src/base/InputHandler.o: src/base/InputHandler.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/base/InputHandler.cpp -o $(OBJDIR_DEBUG)/src/base/InputHandler.o
 
 $(OBJDIR_DEBUG)/src/base/Logger.o: src/base/Logger.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/base/Logger.cpp -o $(OBJDIR_DEBUG)/src/base/Logger.o
@@ -81,6 +87,12 @@ out_release: $(OBJ_RELEASE) $(DEP_RELEASE)
 
 $(OBJDIR_RELEASE)/src/base/BaseServer.o: src/base/BaseServer.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/base/BaseServer.cpp -o $(OBJDIR_RELEASE)/src/base/BaseServer.o
+
+$(OBJDIR_RELEASE)/src/base/Config.o: src/base/Config.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/base/Config.cpp -o $(OBJDIR_RELEASE)/src/base/Config.o
+
+$(OBJDIR_RELEASE)/src/base/InputHandler.o: src/base/InputHandler.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/base/InputHandler.cpp -o $(OBJDIR_RELEASE)/src/base/InputHandler.o
 
 $(OBJDIR_RELEASE)/src/base/Logger.o: src/base/Logger.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/base/Logger.cpp -o $(OBJDIR_RELEASE)/src/base/Logger.o
