@@ -6,7 +6,7 @@ namespace Beliskner
 BaseServer::BaseServer( Config* _config ) : config( _config )
 {
     logger = Logger::getSingletonPtr();
-
+    handler = new InputHandler();
     socketfd = bindSocket();
     make_socket_non_blocking( socketfd );
     efd = epoll_create1( 0 );
@@ -217,7 +217,10 @@ void BaseServer::do_io( int i )
             * and the buffer is cleaned    *
             * afterwards                   *
             ********************************/
-            std::cout << buf << std::endl;
+            buf[count] = '\0';
+
+            handler->handleInput( buf, events[i].data.fd );
+
             memset( buf, '\0', sizeof( buf ) );
 
             /********************************************

@@ -19,6 +19,7 @@
 
 #include "Logger.hpp"
 #include "Config.hpp"
+#include "InputHandler.hpp"
 
 namespace Beliskner
 {
@@ -39,6 +40,7 @@ private:
 
     Logger *logger;
     Config *config;
+    InputHandler *handler;
 
     int bindSocket();
     void do_accept();
