@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <vector>
 #include <unistd.h>
 #include <netdb.h>
 #include <fcntl.h>
@@ -37,6 +38,8 @@ private:
     int efd;
     struct epoll_event event;
     struct epoll_event events[MAXEVENTS];
+
+    std::vector<int> *clients;
 
     Logger *logger;
     Config *config;

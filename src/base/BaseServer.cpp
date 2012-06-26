@@ -5,8 +5,11 @@ namespace Beliskner
 
 BaseServer::BaseServer( Config* _config ) : config( _config )
 {
+    clients = new std::vector<int>();
+
     logger = Logger::getSingletonPtr();
-    handler = new InputHandler();
+
+    handler = new InputHandler( clients );
     socketfd = bindSocket();
     make_socket_non_blocking( socketfd );
     efd = epoll_create1( 0 );
@@ -33,17 +36,18 @@ BaseServer::BaseServer( Config* _config ) : config( _config )
 
 BaseServer::~BaseServer()
 {
-    std::cout << "should destruct" << std::endl;
+    delete handler;
 }
 
 void BaseServer::run()
 {
     int n, i;
     n = epoll_wait( efd, events, MAXEVENTS, -1 );
+
     for ( i = 0; i < n; i++ )
     {
-        if( ( events[i].events & EPOLLERR ) ||
-            ( events[i].events & EPOLLHUP ) ||
+        if( (    events[i].events & EPOLLERR ) ||
+            (    events[i].events & EPOLLHUP ) ||
             ( !( events[i].events & EPOLLIN ) ) )
         {
             logger->log( "epoll error on fd: ", strerror( errno ) );
@@ -169,6 +173,11 @@ void BaseServer::do_accept()
             logger->log( "failed to make_socket_non_blocking: do_accept" );
         }
 
+        /***************************
+        * store all fds in clients *
+        ***************************/
+        clients->push_back( infd );
+
         event.data.fd = infd;
         event.events = EPOLLIN | EPOLLET;
         listener = epoll_ctl( efd, EPOLL_CTL_ADD, infd, &event );
@@ -201,7 +210,9 @@ void BaseServer::do_io( int i )
                 * remote side            *
                 **************************/
                 shutdown( events[i].data.fd, SHUT_WR );
+                handler->removeFD( events[i].data.fd );
                 close( events[i].data.fd );
+
                 break;
             }
 
