@@ -39,8 +39,6 @@ private:
     struct epoll_event event;
     struct epoll_event events[MAXEVENTS];
 
-    std::vector<int> *clients;
-
     Logger *logger;
     Config *config;
     InputHandler *handler;

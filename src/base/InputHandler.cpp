@@ -3,7 +3,7 @@
 namespace Beliskner
 {
 
-InputHandler::InputHandler( std::vector<int> *_clients) : clients( _clients )
+InputHandler::InputHandler()
 {
 
 }
@@ -13,25 +13,29 @@ InputHandler::~InputHandler()
 
 }
 
-void InputHandler::handleInput( std::string input, int fd )
+void InputHandler::handleInput( void* input, int fd )
 {
-    std::cout << input;
+    /*
+    std::string test = (char *) input;
 
-    for( std::vector<int>::iterator it = clients->begin(); it != clients->end(); ++it )
+    for( std::vector<int>::iterator it = clients.begin(); it != clients.end(); ++it )
     {
         int tempsock = *it;
         if( tempsock != fd )
         {
-            write( tempsock, input.c_str(), input.size() );
+            write( tempsock, test.c_str(), test.size() );
         }
         std::cout << *it << std::endl;
     }
+    */
+    message * test = (message *) input;
+    std::cout << test->status << test->info[0] << test->info[1] << test->info[2] << std::endl;
 }
 
-void InputHandler::removeFD( int i )
+void InputHandler::delFD( int i )
 {
     int iter = 0;
-    for( std::vector<int>::iterator it = clients->begin(); it != clients->end(); ++it )
+    for( std::vector<int>::iterator it = clients.begin(); it != clients.end(); ++it )
     {
         int tempsock = *it;
         if( tempsock == i )
@@ -40,7 +44,12 @@ void InputHandler::removeFD( int i )
         }
         ++iter;
     }
-    clients->erase( clients->begin() + iter );
+    clients.erase( clients.begin() + iter );
+}
+
+void InputHandler::addFD( int i )
+{
+    clients.push_back( i );
 }
 
 }

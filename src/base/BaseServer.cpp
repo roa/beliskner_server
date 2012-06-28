@@ -5,11 +5,9 @@ namespace Beliskner
 
 BaseServer::BaseServer( Config* _config ) : config( _config )
 {
-    clients = new std::vector<int>();
-
     logger = Logger::getSingletonPtr();
 
-    handler = new InputHandler( clients );
+    handler = new InputHandler();
     socketfd = bindSocket();
     make_socket_non_blocking( socketfd );
     efd = epoll_create1( 0 );
@@ -176,7 +174,7 @@ void BaseServer::do_accept()
         /***************************
         * store all fds in clients *
         ***************************/
-        clients->push_back( infd );
+        handler->addFD( infd );
 
         event.data.fd = infd;
         event.events = EPOLLIN | EPOLLET;
@@ -210,7 +208,7 @@ void BaseServer::do_io( int i )
                 * remote side            *
                 **************************/
                 shutdown( events[i].data.fd, SHUT_WR );
-                handler->removeFD( events[i].data.fd );
+                handler->delFD( events[i].data.fd );
                 close( events[i].data.fd );
 
                 break;
