@@ -21,6 +21,7 @@
 #include "Logger.hpp"
 #include "Config.hpp"
 #include "InputHandler.hpp"
+#include "Message.hpp"
 
 namespace Beliskner
 {

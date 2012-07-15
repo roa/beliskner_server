@@ -192,9 +192,10 @@ void BaseServer::do_io( int i )
    while ( 1 )
     {
         ssize_t count;
-        char buf[MAXBUFSIZE];
 
-        count = read( events[i].data.fd, buf, sizeof( buf ) );
+        message *buf = new message();
+
+        count = read( events[i].data.fd, buf, sizeof( message ) );
         if ( count == -1 )
         {
             break;
@@ -220,7 +221,6 @@ void BaseServer::do_io( int i )
             * and the buffer is cleaned    *
             * afterwards                   *
             ********************************/
-            buf[count] = '\0';
 
             handler->handleInput( buf, events[i].data.fd );
 
@@ -233,6 +233,7 @@ void BaseServer::do_io( int i )
             * //close( events[i].data.fd );             *
             *********************************************/
         }
+        delete buf;
     }
 }
 

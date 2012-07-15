@@ -6,7 +6,7 @@ namespace Beliskner
 Config::Config()
 {
     logger = Logger::getSingletonPtr();
-    load( "config/init.lua" );
+    load( "/home/roa/programming/beliskner/beliskner_server/config/init.lua" );
 }
 
 Config::~Config()
